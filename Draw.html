@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Shreya's Art Studio | Drawing & Creativity</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #1e293b;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Welcome Popup Modal */
+    .welcome-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+ backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .welcome-modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .welcome-card {
+      background: linear-gradient(135deg, #ffffff, #fff5f8);
+      max-width: 450px;
+      width: 90%;
+      padding: 2.5rem;
+      border-radius: 2rem;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+      position: relative;
+      border: 1px solid rgba(219, 39, 119, 0.2);
+    }
+
+    .welcome-modal.active .welcome-card {
+      transform: scale(1);
+    }
+
+    .welcome-icon {
+      font-size: 4rem;
+      background: linear-gradient(135deg, #db2777, #f43f5e);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1rem;
+      animation: bounce 0.8s ease infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .welcome-card h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #0f172a;
+    }
+
+    .welcome-card h2 span {
+      color: #db2777;
+    }
+
+    .welcome-card p {
+      color: #475569;
+      margin: 1rem 0;
+      line-height: 1.6;
+    }
+
+    .welcome-name-input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 2px solid #f1f5f9;
+      border-radius: 1rem;
+      font-family: inherit;
+      font-size: 1rem;
+      margin: 1rem 0;
+      transition: all 0.2s;
+    }
+
+    .welcome-name-input:focus {
+      outline: none;
+      border-color: #db2777;
+    }
+
+    .welcome-btn {
+      background: linear-gradient(135deg, #db2777, #f43f5e);
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    .welcome-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(219, 39, 119, 0.4);
+    }
+
+    .close-welcome {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #94a3b8;
+      transition: color 0.2s;
+    }
+
+    .close-welcome:hover {
+      color: #db2777;
+    }
+
+    /* Toast Message */
+    .toast-message {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: linear-gradient(135deg, #db2777, #f43f5e);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 3rem;
+      font-weight: 500;
+      z-index: 9998;
+      transition: transform 0.3s ease;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      white-space: nowrap;
+    }
+
+    .toast-message.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Navigation */
+    .navbar {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 1rem 0;
+      border-bottom: 1px solid #eef2ff;
+    }
+
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #db2777, #f43f5e);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #475569;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #db2777;
+    }
+
+    .menu-btn {
+      display: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #db2777;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 5rem 0 4rem;
+    }
+
+    .hero-grid {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-content {
+      flex: 1;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: #fce7f3;
+      color: #db2777;
+      padding: 0.25rem 1rem;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-content h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      color: #0f172a;
+    }
+
+    .hero-highlight {
+      background: linear-gradient(120deg, #fce7f3, #fecdd3);
+      padding: 0 0.3rem;
+      color: #be185d;
+    }
+
+    .hero-content p {
+      font-size: 1.1rem;
+      color: #475569;
+      max-width: 90%;
+      margin: 1.5rem 0;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.8rem;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary {
+      background: #0f172a;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #db2777;
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      border: 1.5px solid #e2e8f0;
+      color: #1e293b;
+      background: transparent;
+    }
+
+    .btn-outline:hover {
+      border-color: #db2777;
+      color: #db2777;
+    }
+
+    .hero-image {
+      flex: 0.9;
+      display: flex;
+      justify-content: center;
+    }
+
+    .art-bubble {
+      width: 320px;
+      height: 320px;
+      background: linear-gradient(135deg, #fce7f3, #fecdd3);
+      border-radius: 52% 48% 55% 45% / 48% 52% 48% 52%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .art-bubble i {
+      font-size: 7rem;
+      color: #db2777;
+    }
+
+    /* Section Title */
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 2.5rem;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    .section-title span {
+      background: linear-gradient(135deg, #db2777, #f43f5e);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* About Card */
+    .about-card {
+      background: #f8fafc;
+      border-radius: 2rem;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      border: 1px solid #f1f5f9;
+    }
+
+    .about-card p {
+      font-size: 1rem;
+      color: #334155;
+      line-height: 1.7;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .feature-card {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 1.8rem 1rem;
+      text-align: center;
+      transition: all 0.2s;
+      border: 1px solid #f1f5f9;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: #fecdd3;
+    }
+
+    .feature-card i {
+      font-size: 2.2rem;
+      color: #db2777;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .feature-card p {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    /* Stats */
+    .stats-section {
+      background: #0f172a;
+      border-radius: 2rem;
+      padding: 3rem 2rem;
+      margin: 3rem 0;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      text-align: center;
+    }
+
+    .stat h2 {
+      font-size: 2rem;
+      color: white;
+      font-weight: 700;
+    }
+
+    .stat p {
+      color: #94a3b8;
+      font-size: 0.8rem;
+      margin-top: 0.3rem;
+    }
+
+    /* Gallery */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .gallery-item {
+      border-radius: 1.5rem;
+      overflow: hidden;
+      background: #f8fafc;
+      transition: all 0.3s;
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-5px);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+
+    .gallery-info {
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .gallery-info p {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #db2777;
+    }
+
+    /* CTA */
+    .cta-section {
+      background: linear-gradient(135deg, #fce7f3, #fecdd3);
+      border-radius: 2rem;
+      padding: 3rem;
+      text-align: center;
+      margin: 3rem 0;
+    }
+
+    .cta-section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .cta-section p {
+      color: #475569;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Contact */
+    .contact-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .contact-info {
+      flex: 1;
+      background: #f8fafc;
+      border-radius: 1.5rem;
+      padding: 2rem;
+    }
+
+    .contact-info h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-detail {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1rem 0;
+      color: #334155;
+    }
+
+    .contact-detail i {
+      width: 2rem;
+      color: #db2777;
+    }
+
+    .contact-form {
+      flex: 1.5;
+      background: #f8fafc;
+      border-radius: 1.5rem;
+      padding: 2rem;
+    }
+
+    .contact-form h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      margin: 0.5rem 0 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      font-family: inherit;
+      background: white;
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      outline: none;
+      border-color: #db2777;
+    }
+
+    /* Footer */
+    footer {
+      background: #0f172a;
+      color: #94a3b8;
+      padding: 3rem 0 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .footer-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+
+    .footer-col h4 {
+      color: white;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .footer-col a {
+      color: #94a3b8;
+      text-decoration: none;
+      display: block;
+      margin: 0.5rem 0;
+      font-size: 0.8rem;
+    }
+
+    .footer-col a:hover {
+      color: #db2777;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 2rem;
+      margin-top: 2rem;
+      border-top: 1px solid #1e293b;
+      font-size: 0.7rem;
+    }
+
+    /* Back to Top */
+    .back-to-top {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #0f172a;
+      color: white;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 999;
+    }
+
+    .back-to-top.show {
+      opacity: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+      .features-grid, .stats-grid, .gallery-grid, .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container, .nav-container { padding: 0 1.2rem; }
+      .menu-btn { display: block; }
+      .nav-links {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+        padding: 1rem 0;
+      }
+      .nav-links.active { display: flex; }
+      .hero-grid { flex-direction: column-reverse; text-align: center; }
+      .hero-content p { max-width: 100%; }
+      .btn-group { justify-content: center; }
+      .hero-content h1 { font-size: 2.2rem; }
+      .art-bubble { width: 220px; height: 220px; }
+      .art-bubble i { font-size: 4rem; }
+      .section-title { font-size: 1.6rem; }
+      .features-grid, .gallery-grid { grid-template-columns: 1fr; }
+      .contact-grid { flex-direction: column; }
+      .footer-content { grid-template-columns: 1fr; text-align: center; }
+      .toast-message { white-space: normal; text-align: center; width: 90%; font-size: 0.9rem; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+      .stat h2 { font-size: 1.4rem; }
+      .cta-section { padding: 2rem; }
+      .cta-section h2 { font-size: 1.3rem; }
+      .welcome-card { padding: 1.8rem; }
+      .welcome-card h2 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Welcome Modal -->
+<div class="welcome-modal" id="welcomeModal">
+  <div class="welcome-card">
+    <div class="close-welcome" id="closeWelcome">&times;</div>
+    <div class="welcome-icon">
+      <i class="fas fa-paintbrush"></i>
+    </div>
+    <h2>Welcome to <span>Shreya's<br>Art Studio</span>!</h2>
+    <p>🎨 Please enter your name to continue your creative journey.</p>
+    <input type="text" id="visitorName" class="welcome-name-input" placeholder="Enter your name" autocomplete="off">
+    <button class="welcome-btn" id="welcomeBtn">✨ Start Exploring ✨</button>
+  </div>
+</div>
+
+<!-- Toast Message -->
+<div class="toast-message" id="toastMessage"></div>
+
+<!-- Navigation -->
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="logo">Shreya's Art Studio</div>
+    <div class="menu-btn" id="menuBtn">
+      <i class="fas fa-bars"></i>
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section id="home" class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-badge">✨ Express Your Creativity</div>
+        <h1>Drawing is the <span class="hero-highlight">language</span><br>of the soul.</h1>
+        <p>Learn, practice, and share your art with a community of passionate artists. Start your creative journey today.</p>
+        <div class="btn-group">
+          <a href="#gallery" class="btn btn-primary">Explore Gallery <i class="fas fa-arrow-right"></i></a>
+          <a href="#contact" class="btn btn-outline">Get in Touch</a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <div class="art-bubble">
+          <i class="fas fa-feather-alt"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <!-- About -->
+  <section id="about">
+    <h2 class="section-title">About <span>Drawing</span></h2>
+    <div class="about-card">
+      <p>Drawing is a form of visual art where people use tools like pencil, pen, watercolor, charcoal, or digital devices to create images on a surface. It is one of the oldest and most basic ways of expressing ideas, emotions, and creativity.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <i class="fas fa-pencil-alt"></i>
+        <h3>Traditional Art</h3>
+        <p>Pencil, charcoal, watercolor</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-laptop-code"></i>
+        <h3>Digital Art</h3>
+        <p>Procreate, Photoshop</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-users"></i>
+        <h3>Art Community</h3>
+        <p>Share & learn together</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-trophy"></i>
+        <h3>Art Contests</h3>
+        <p>Showcase your talent</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Welcome Message inside page -->
+  <div id="welcomeMessageBox" style="text-align: center; margin: 2rem 0; padding: 2rem; background: #f8fafc; border-radius: 1.5rem; display: none;">
+    <i class="fas fa-heart" style="color: #db2777; font-size: 2rem; margin-bottom: 1rem; display: inline-block;"></i>
+    <h3 id="displayUserName" style="font-size: 1.3rem;"></h3>
+    <p style="color: #475569; margin-top: 0.5rem;">Welcome to our creative space! We're happy to have you here. 🎨</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div class="stat"><h2>500+</h2><p>Art Tutorials</p></div>
+      <div class="stat"><h2>10k+</h2><p>Happy Students</p></div>
+      <div class="stat"><h2>200+</h2><p>Artworks</p></div>
+      <div class="stat"><h2>50+</h2><p>Expert Artists</p></div>
+    </div>
+  </div>
+
+  <!-- Gallery -->
+  <section id="gallery">
+    <h2 class="section-title">Art <span>Gallery</span></h2>
+    <p style="text-align: center; color: #64748b; margin-bottom: 2rem;">Explore beautiful drawings created by talented artists</p>
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="Mandala Art 1.webp" alt="Mandala Art" onerror="this.src='https://placehold.co/400x250/fce7f3/db2777?text=🌸+Floral+Art'">
+        <div class="gallery-info"><p>🌸 Mandala's Beauty</p></div>
+      </div>
+      <div class="gallery-item">
+        <img src="Kalka Art 1.jpeg" alt="Portrait Art" onerror="this.src='https://placehold.co/400x250/fce7f3/db2777?text=🎨+Portrait'">
+        <div class="gallery-info"><p>🎨 Portrait Art</p></div>
+      </div>
+      <div class="gallery-item">
+        <img src="Flower Mandala.jpeg" alt="Flower Photo" onerror="this.src='https://placehold.co/400x250/fce7f3/db2777?text=🏔️+Nature'">
+        <div class="gallery-info"><p>🌸 Mandala Art</p></div>
+      </div>
+      <div class="gallery-item">
+        <img src="Mandala Magic 1.jpeg" alt="Mandala Magic" onerror="this.src='https://placehold.co/400x250/fce7f3/db2777?text=🏔️+Nature'">
+        <div class="gallery-info"><p>🌸 Mandala Art</p></div>
+      </div>
+      <div class="gallery-item">
+        <img src="Kalka Art.jpeg" alt="Kalka Art" onerror="this.src='https://placehold.co/400x250/fce7f3/db2777?text=🏔️+Nature'">
+        <div class="gallery-info"><p>🎨 Kalka Charm</p></div>
+      </div>
+      <div class="gallery-item">
+        <img src="Couple Photo.jpeg" alt="Couple Photo" onerror="this.src='https://placehold.co/400x250/fce7f3/db2777?text=🏔️+Nature'">
+        <div class="gallery-info"><p>🎨 Portrait Art</p></div>
+      </div>
+      <div class="gallery-item">
+        <img src="Girlss photo.jpeg" alt="Girls Photo" onerror="this.src='https://placehold.co/400x250/fce7f3/db2777?text=🏔️+Nature'">
+        <div class="gallery-info"><p>🎨 Portrait Art</p></div>
+      </div>
+      <div class="gallery-item">
+        <img src="Mandala Magic 2.jpeg" alt="Mandala art" onerror="this.src='https://placehold.co/400x250/fce7f3/db2777?text=🏔️+Nature'">
+        <div class="gallery-info"><p>🌸 Mandala Magic</p>
+        </div> 
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-section">ss
+    <h2>Ready to Start Your Art Journey?</h2>
+    <p>Join thousands of artists who are improving their skills every day!</p>
+    <a href="#contact" class="btn btn-primary">Get Started <i class="fas fa-rocket"></i></a>
+  </div>
+
+  <!-- Contact -->
+  <section id="contact">
+    <h2 class="section-title">Get in <span>Touch</span></h2>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>Contact Info</h3>
+        <div class="contact-detail"><i class="fas fa-phone"></i><span>+91 7908982443</span></div>
+        <div class="contact-detail"><i class="fas fa-envelope"></i><span>shreyakapat3@gmail.com</span></div>
+        <div class="contact-detail"><i class="fas fa-map-marker-alt"></i><span>Kolkata, India</span></div>
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+          <a href="#" style="color: #db2777; font-size: 1.2rem;"><i class="fab fa-instagram"></i></a>
+          <a href="#" style="color: #db2777; font-size: 1.2rem;"><i class="fab fa-youtube"></i></a>
+          <a href="#" style="color: #db2777; font-size: 1.2rem;"><i class="fab fa-pinterest"></i></a>
+        </div>
+      </div>
+      <div class="contact-form">
+        <h3>Send a Message</h3>
+        <form id="contactForm">
+          <input type="text" id="userName" placeholder="Your name" required>
+          <input type="email" id="userEmail" placeholder="Email address" required>
+          <textarea id="userMessage" rows="4" placeholder="Your message..."></textarea>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message <i class="fas fa-paper-plane"></i></button>
+          <p id="formFeedback" style="margin-top: 1rem; display: none;"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-col"><h4>Shreya's Art Studio</h4><p style="font-size: 0.8rem;">Inspiring creativity through art.</p></div>
+    <div class="footer-col"><h4>Quick Links</h4><a href="#home">Home</a><a href="#about">About</a><a href="#gallery">Gallery</a><a href="#contact">Contact</a></div>
+    <div class="footer-col"><h4>Resources</h4><a href="#">Art Supplies</a><a href="#">Drawing Tips</a><a href="#">Art Blog</a></div>
+    <div class="footer-col"><h4>Connect</h4><a href="#">Instagram</a><a href="#">YouTube</a><a href="#">Pinterest</a></div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 Shreya's Art Studio | All Rights Reserved</p></div>
+</footer>
+
+<div class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i></div>
+
+<script>
+  // Welcome Modal Functionality
+  const welcomeModal = document.getElementById('welcomeModal');
+  const closeWelcome = document.getElementById('closeWelcome');
+  const welcomeBtn = document.getElementById('welcomeBtn');
+  const visitorNameInput = document.getElementById('visitorName');
+  const toastMessage = document.getElementById('toastMessage');
+  const welcomeMessageBox = document.getElementById('welcomeMessageBox');
+  const displayUserName = document.getElementById('displayUserName');
+
+  // Check if user already visited (localStorage)
+  const hasVisited = localStorage.getItem('hasVisitedShreyaArt');
+  const savedName = localStorage.getItem('visitorName');
+
+  function showToast(message) {
+    toastMessage.textContent = message;
+    toastMessage.classList.add('show');
+    setTimeout(() => {
+      toastMessage.classList.remove('show');
+    }, 3000);
+  }
+
+  function showWelcomeMessage(name) {
+    if (name && name.trim() !== '') {
+      displayUserName.innerHTML = `🎨 Hello ${name}! 🎨`;
+      welcomeMessageBox.style.display = 'block';
+      setTimeout(() => {
+        welcomeMessageBox.style.display = 'none';
+      }, 5000);
+    }
+  }
+
+  function closeModalAndSave(name) {
+    const finalName = name && name.trim() !== '' ? name.trim() : 'Art Lover';
+    localStorage.setItem('hasVisitedShreyaArt', 'true');
+    localStorage.setItem('visitorName', finalName);
+    welcomeModal.classList.remove('active');
+    showToast(`✨ Welcome ${finalName}! Enjoy your creative journey ✨`);
+    showWelcomeMessage(finalName);
+  }
+
+  if (!hasVisited) {
+    // First time - show modal
+    setTimeout(() => {
+      welcomeModal.classList.add('active');
+    }, 100);
+  } else {
+    // Returning user - show toast only
+    setTimeout(() => {
+      showToast(`✨ Welcome back ${savedName || 'Art Lover'}! ✨`);
+      showWelcomeMessage(savedName || 'Art Lover');
+    }, 100);
+  }
+
+  // Welcome button click
+  welcomeBtn.addEventListener('click', () => {
+    const name = visitorNameInput.value;
+    closeModalAndSave(name);
+  });
+
+  // Enter key press
+  visitorNameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      const name = visitorNameInput.value;
+      closeModalAndSave(name);
+    }
+  });
+
+  // Close button click
+  closeWelcome.addEventListener('click', () => {
+    const name = visitorNameInput.value;
+    closeModalAndSave(name);
+  });
+
+  // Click outside modal to close
+  welcomeModal.addEventListener('click', (e) => {
+    if (e.target === welcomeModal) {
+      const name = visitorNameInput.value;
+      closeModalAndSave(name);
+    }
+  });
+
+  // Mobile Menu
+  const menuBtn = document.getElementById('menuBtn');
+  const navLinks = document.getElementById('navLinks');
+  if(menuBtn) menuBtn.onclick = () => navLinks.classList.toggle('active');
+
+  // Contact Form
+  const form = document.getElementById('contactForm');
+  const feedback = document.getElementById('formFeedback');
+  if(form) form.onsubmit = (e) => {
+    e.preventDefault();
+    const name = document.getElementById('userName')?.value.trim() || '';
+    const email = document.getElementById('userEmail')?.value.trim() || '';
+    feedback.style.display = 'block';
+    feedback.innerHTML = `✓ Thank you ${name}! We'll reply to ${email} soon.`;
+    feedback.style.cssText = 'color:#2e7d32; background:#e8f5e9; padding:0.8rem; border-radius:1rem;';
+    form.reset();
+    setTimeout(() => feedback.style.display = 'none', 4000);
+  };
+
+  // Back to Top
+  const backToTop = document.getElementById('backToTop');
+  window.onscroll = () => backToTop.classList.toggle('show', window.pageYOffset > 300);
+  backToTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Smooth Scroll
+  document.querySelectorAll('.nav-links a, .btn, .cta-section a').forEach(anchor => {
+    anchor.onclick = function(e) {
+      const href = this.getAttribute('href');
+      if(href && href.startsWith('#') && href !== '#') {
+        e.preventDefault();
+        document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+        navLinks.classList.remove('active');
+      }
+    };
+  });
+</script>
+</body>
+</html>
